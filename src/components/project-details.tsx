@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress"
 import { TaskList } from './task-list'
 import { CreateTaskForm } from './create-task-form'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Settings } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export function ProjectDetails({ project }: { project: Project }) {
@@ -63,19 +63,24 @@ export function ProjectDetails({ project }: { project: Project }) {
       <Header />
       <main className="flex-1 overflow-y-auto p-6">
         <div className="container mx-auto">
-          <div className="flex items-center gap-4 mb-6">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push('/projects')}
-              className="h-10 w-10"
-            >
-              <ArrowLeft className="h-6 w-6" />
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold">{project.name}</h1>
-              <p className="text-muted-foreground">{project.description}</p>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => router.push('/projects')}
+                className="h-10 w-10"
+              >
+                <ArrowLeft className="h-6 w-6" />
+              </Button>
+              <div>
+                <h1 className="text-3xl font-bold">{project.name}</h1>
+                <p className="text-muted-foreground">{project.description}</p>
+              </div>
             </div>
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <Settings className="h-5 w-5" />
+            </Button>
           </div>
           <div className="grid gap-6 md:grid-cols-2">
             <Card>

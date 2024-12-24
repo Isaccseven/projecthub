@@ -1,5 +1,6 @@
 import { Task } from '@/types'
 import { Checkbox } from "@/components/ui/checkbox"
+import { format } from "date-fns"
 
 interface TaskListProps {
   tasks: Task[]
@@ -20,12 +21,19 @@ export function TaskList({ tasks, onToggleCompletion }: TaskListProps) {
             checked={task.completed}
             onCheckedChange={() => onToggleCompletion(task.id)}
           />
-          <label
-            htmlFor={task.id}
-            className={`text-sm ${task.completed ? 'text-muted-foreground line-through' : ''}`}
-          >
-            {task.title}
-          </label>
+          <div className="flex-1">
+            <label
+              htmlFor={task.id}
+              className={`text-sm ${task.completed ? 'text-muted-foreground line-through' : ''}`}
+            >
+              {task.title}
+            </label>
+            {task.dueDate && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Due {format(new Date(task.dueDate), 'MMM d, yyyy')}
+              </p>
+            )}
+          </div>
         </div>
       ))}
     </div>
