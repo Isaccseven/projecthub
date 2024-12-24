@@ -8,11 +8,12 @@ import { Progress } from "@/components/ui/progress"
 import { TaskList } from './task-list'
 import { CreateTaskForm } from './create-task-form'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Settings } from 'lucide-react'
+import { ArrowLeft, Plus, Settings } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export function ProjectDetails({ project }: { project: Project }) {
   const [tasks, setTasks] = useState<Task[]>(project.tasks || [])
+  const [showAddTaskForm, setShowAddTaskForm] = useState(false)
   const router = useRouter()
 
   const updateProjectInStorage = async (updatedTasks: Task[]) => {
@@ -44,19 +45,70 @@ export function ProjectDetails({ project }: { project: Project }) {
     const task = { ...newTask, id: Date.now().toString() }
     const updatedTasks = [...tasks, task]
     setTasks(updatedTasks)
+    setShowAddTaskForm(false)
     await updateProjectInStorage(updatedTasks)
   }
 
-  const toggleTaskCompletion = async (taskId: string) => {
-    const updatedTasks = tasks.map(task => 
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    )
+  const addSubtask = async (parentTaskId: string, subtask: Omit<Task, 'id'>) => {
+    const newSubtask = { ...subtask, id: Date.now().toString() }
+    
+    const updateTasksRecursively = (tasks: Task[]): Task[] => {
+      return tasks.map(task => {
+        if (task.id === parentTaskId) {
+          return {
+            ...task,
+            subtasks: [...(task.subtasks || []), newSubtask]
+          }
+        }
+        if (task.subtasks) {
+          return {
+            ...task,
+            subtasks: updateTasksRecursively(task.subtasks)
+          }
+        }
+        return task
+      })
+    }
+
+    const updatedTasks = updateTasksRecursively(tasks)
     setTasks(updatedTasks)
     await updateProjectInStorage(updatedTasks)
   }
 
-  const completedTasks = tasks.filter(task => task.completed).length
-  const progress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0
+  const toggleTaskCompletion = async (taskId: string) => {
+    const toggleTask = (tasks: Task[]): Task[] => {
+      return tasks.map(task => {
+        if (task.id === taskId) {
+          return { ...task, completed: !task.completed }
+        }
+        if (task.subtasks) {
+          return { ...task, subtasks: toggleTask(task.subtasks) }
+        }
+        return task
+      })
+    }
+
+    const updatedTasks = toggleTask(tasks)
+    setTasks(updatedTasks)
+    await updateProjectInStorage(updatedTasks)
+  }
+
+  const countTasks = (tasks: Task[]): number => {
+    return tasks.reduce((count, task) => {
+      return count + 1 + (task.subtasks ? countTasks(task.subtasks) : 0)
+    }, 0)
+  }
+
+  const countCompletedTasks = (tasks: Task[]): number => {
+    return tasks.reduce((count, task) => {
+      const subtasksCompleted = task.subtasks ? countCompletedTasks(task.subtasks) : 0
+      return count + (task.completed ? 1 : 0) + subtasksCompleted
+    }, 0)
+  }
+
+  const totalTasks = countTasks(tasks)
+  const completedTasks = countCompletedTasks(tasks)
+  const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0
 
   return (
     <div className="flex h-screen flex-col">
@@ -90,19 +142,33 @@ export function ProjectDetails({ project }: { project: Project }) {
               <CardContent>
                 <Progress value={progress} className="mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  {completedTasks} of {tasks.length} tasks completed
+                  {completedTasks} of {totalTasks} tasks completed
                 </p>
               </CardContent>
             </Card>
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Tasks</CardTitle>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => setShowAddTaskForm(!showAddTaskForm)}
+                  className="h-8 w-8"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
               </CardHeader>
               <CardContent>
-                <TaskList tasks={tasks} onToggleCompletion={toggleTaskCompletion} />
-                <div className="mt-6 pt-6 border-t">
-                  <CreateTaskForm onCreateTask={addTask} />
-                </div>
+                {showAddTaskForm && (
+                  <div className="mb-4">
+                    <CreateTaskForm onCreateTask={addTask} />
+                  </div>
+                )}
+                <TaskList 
+                  tasks={tasks} 
+                  onToggleCompletion={toggleTaskCompletion}
+                  onAddSubtask={addSubtask}
+                />
               </CardContent>
             </Card>
           </div>
