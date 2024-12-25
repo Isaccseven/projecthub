@@ -10,6 +10,12 @@ import { CreateTaskForm } from './create-task-form'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Plus, Settings } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function ProjectDetails({ project }: { project: Project }) {
   const [tasks, setTasks] = useState<Task[]>(project.tasks || [])
@@ -93,6 +99,46 @@ export function ProjectDetails({ project }: { project: Project }) {
     await updateProjectInStorage(updatedTasks)
   }
 
+  const deleteTask = async (taskId: string) => {
+    const deleteTaskRecursively = (tasks: Task[]): Task[] => {
+      return tasks.filter(task => {
+        if (task.id === taskId) {
+          return false;
+        }
+        if (task.subtasks) {
+          task.subtasks = deleteTaskRecursively(task.subtasks);
+        }
+        return true;
+      });
+    };
+
+    const updatedTasks = deleteTaskRecursively(tasks);
+    setTasks(updatedTasks);
+    await updateProjectInStorage(updatedTasks);
+  };
+
+  const deleteProject = async () => {
+    try {
+      // Delete from localStorage
+      const storedProjects = localStorage.getItem('projecthub_projects')
+      if (storedProjects) {
+        const projects = JSON.parse(storedProjects)
+        const updatedProjects = projects.filter((p: Project) => p.id !== project.id)
+        localStorage.setItem('projecthub_projects', JSON.stringify(updatedProjects))
+      }
+
+      // Delete from API
+      await fetch(`/api/projects/${project.id}`, {
+        method: 'DELETE',
+      })
+
+      // Redirect to projects page
+      router.push('/projects')
+    } catch (error) {
+      console.error('Failed to delete project:', error)
+    }
+  }
+
   const countTasks = (tasks: Task[]): number => {
     return tasks.reduce((count, task) => {
       return count + 1 + (task.subtasks ? countTasks(task.subtasks) : 0)
@@ -130,9 +176,18 @@ export function ProjectDetails({ project }: { project: Project }) {
                 <p className="text-muted-foreground">{project.description}</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <Settings className="h-5 w-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-10 w-10">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem className="text-destructive" onClick={deleteProject}>
+                  Delete Project
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
@@ -168,6 +223,7 @@ export function ProjectDetails({ project }: { project: Project }) {
                   tasks={tasks} 
                   onToggleCompletion={toggleTaskCompletion}
                   onAddSubtask={addSubtask}
+                  onDeleteTask={deleteTask}
                 />
               </CardContent>
             </Card>

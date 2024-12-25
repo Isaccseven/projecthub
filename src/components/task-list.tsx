@@ -3,7 +3,7 @@
 import { Task } from '@/types'
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from './ui/button'
-import { Plus } from 'lucide-react'
+import { Plus, Minus } from 'lucide-react'
 import { CreateTaskForm } from './create-task-form'
 import { useState } from 'react'
 import { format } from 'date-fns'
@@ -12,16 +12,18 @@ interface TaskListProps {
   tasks: Task[]
   onToggleCompletion: (taskId: string) => void
   onAddSubtask?: (parentTaskId: string, subtask: Omit<Task, 'id'>) => void
+  onDeleteTask: (taskId: string) => void
 }
 
 interface TaskItemProps {
   task: Task
   onToggleCompletion: (taskId: string) => void
   onAddSubtask?: (parentTaskId: string, subtask: Omit<Task, 'id'>) => void
+  onDeleteTask: (taskId: string) => void
   level?: number
 }
 
-function TaskItem({ task, onToggleCompletion, onAddSubtask, level = 0 }: TaskItemProps) {
+function TaskItem({ task, onToggleCompletion, onAddSubtask, onDeleteTask, level = 0 }: TaskItemProps) {
   const [showSubtaskForm, setShowSubtaskForm] = useState(false)
 
   return (
@@ -42,16 +44,26 @@ function TaskItem({ task, onToggleCompletion, onAddSubtask, level = 0 }: TaskIte
               </div>
             )}
           </div>
-          {onAddSubtask && (
+          <div className="flex items-center gap-1">
+            {onAddSubtask && (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setShowSubtaskForm(!showSubtaskForm)}
+                className="h-8 w-8"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            )}
             <Button 
               variant="ghost" 
               size="icon"
-              onClick={() => setShowSubtaskForm(!showSubtaskForm)}
+              onClick={() => onDeleteTask(task.id)}
               className="h-8 w-8"
             >
-              <Plus className="h-4 w-4" />
+              <Minus className="h-4 w-4" />
             </Button>
-          )}
+          </div>
         </div>
       </div>
       
@@ -72,6 +84,7 @@ function TaskItem({ task, onToggleCompletion, onAddSubtask, level = 0 }: TaskIte
           task={subtask}
           onToggleCompletion={onToggleCompletion}
           onAddSubtask={onAddSubtask}
+          onDeleteTask={onDeleteTask}
           level={level + 1}
         />
       ))}
@@ -79,7 +92,7 @@ function TaskItem({ task, onToggleCompletion, onAddSubtask, level = 0 }: TaskIte
   )
 }
 
-export function TaskList({ tasks, onToggleCompletion, onAddSubtask }: TaskListProps) {
+export function TaskList({ tasks, onToggleCompletion, onAddSubtask, onDeleteTask }: TaskListProps) {
   if (tasks.length === 0) {
     return <p className="text-muted-foreground">No tasks created yet.</p>
   }
@@ -92,6 +105,7 @@ export function TaskList({ tasks, onToggleCompletion, onAddSubtask }: TaskListPr
           task={task}
           onToggleCompletion={onToggleCompletion}
           onAddSubtask={onAddSubtask}
+          onDeleteTask={onDeleteTask}
         />
       ))}
     </div>
