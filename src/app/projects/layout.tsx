@@ -1,5 +1,6 @@
 import '../globals.css'
 import { Inter } from 'next/font/google'
+import { ProjectsLayout } from '@/components/projects-layout'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -8,31 +9,16 @@ export const metadata = {
   description: 'Manage your projects with ease',
 }
 
-export default function RootLayout({
+export default function Layout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head />
-      <body className={inter.className}>
-        <ProjectsLayout>
-          {children}
-        </ProjectsLayout>
-      </body>
-    </html>
-  )
-}
-
-export function ProjectsLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <div className="min-h-screen bg-background">
-      {children}
+    <div className={inter.className}>
+      <ProjectsLayout>
+        {children}
+      </ProjectsLayout>
     </div>
   )
 }
