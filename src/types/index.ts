@@ -1,13 +1,17 @@
 export interface Task {
-  id: string
-  title: string
-  completed: boolean
-  dueDate?: string
+  id: string;
+  title: string;
+  description?: string;
+  status: 'todo' | 'in-progress' | 'done';
+  dueDate?: string;
+  subtasks?: Task[];
 }
 
 export interface Project {
-  id: string
-  name: string
-  description: string
-  tasks?: Task[]
+  id: string;
+  title: string;
+  description: string;
+  tasks?: Task[];
+  createdAt?: string;
+  updatedAt?: string;
 }

@@ -10,7 +10,7 @@ export async function getProjects() {
 export async function createProject(data: Project) {
   const newProject: Project = {
     id: Date.now().toString(),
-    name: data.name,
+    title: data.title,
     description: data.description,
     tasks: [],
   }

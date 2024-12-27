@@ -84,13 +84,16 @@ export function ProjectDetails({ project }: { project: Project }) {
   const toggleTaskCompletion = async (taskId: string) => {
     const toggleTask = (tasks: Task[]): Task[] => {
       return tasks.map(task => {
-        if (task.id === taskId) {
-          return { ...task, completed: !task.completed }
+        const taskCopy = { ...task }
+        if (taskCopy.id === taskId) {
+          taskCopy.status = taskCopy.status === 'done' ? 'todo' : 'done'
+          return taskCopy
         }
-        if (task.subtasks) {
-          return { ...task, subtasks: toggleTask(task.subtasks) }
+        if (taskCopy.subtasks) {
+          taskCopy.subtasks = toggleTask(taskCopy.subtasks)
+          return taskCopy
         }
-        return task
+        return taskCopy
       })
     }
 
@@ -148,7 +151,7 @@ export function ProjectDetails({ project }: { project: Project }) {
   const countCompletedTasks = (tasks: Task[]): number => {
     return tasks.reduce((count, task) => {
       const subtasksCompleted = task.subtasks ? countCompletedTasks(task.subtasks) : 0
-      return count + (task.completed ? 1 : 0) + subtasksCompleted
+      return count + (task.status === 'done' ? 1 : 0) + subtasksCompleted
     }, 0)
   }
 
@@ -172,7 +175,7 @@ export function ProjectDetails({ project }: { project: Project }) {
                 <ArrowLeft className="h-6 w-6" />
               </Button>
               <div>
-                <h1 className="text-3xl font-bold">{project.name}</h1>
+                <h1 className="text-3xl font-bold">{project.title}</h1>
                 <p className="text-muted-foreground">{project.description}</p>
               </div>
             </div>

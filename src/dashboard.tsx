@@ -22,8 +22,8 @@ export default function Dashboard() {
   const { projects, addProject, loading } = useProjects()
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const handleCreateProject = async (name: string, description: string) => {
-    await addProject(name, description)
+  const handleCreateProject = async (title: string, description: string) => {
+    await addProject(title, description)
     setDialogOpen(false)
   }
 

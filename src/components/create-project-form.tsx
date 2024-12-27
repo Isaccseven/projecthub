@@ -7,20 +7,20 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 interface CreateProjectFormProps {
-  onCreateProject: (name: string, description: string) => Promise<void>
+  onCreateProject: (title: string, description: string) => Promise<void>
 }
 
 export function CreateProjectForm({ onCreateProject }: CreateProjectFormProps) {
-  const [name, setName] = useState("")
+  const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (name.trim() && description.trim()) {
+    if (title.trim() && description.trim()) {
       setIsSubmitting(true)
-      await onCreateProject(name, description)
-      setName("")
+      await onCreateProject(title, description)
+      setTitle("")
       setDescription("")
       setIsSubmitting(false)
     }
@@ -29,12 +29,12 @@ export function CreateProjectForm({ onCreateProject }: CreateProjectFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="project-name">Project Name</Label>
+        <Label htmlFor="project-title">Project Title</Label>
         <Input
-          id="project-name"
-          placeholder="Enter project name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          id="project-title"
+          placeholder="Enter project title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           required
         />
       </div>

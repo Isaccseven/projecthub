@@ -31,11 +31,11 @@ function TaskItem({ task, onToggleCompletion, onAddSubtask, onDeleteTask, level 
       <div className="flex items-center gap-2">
         <div style={{ marginLeft: `${level * 24}px` }} className="flex-1 flex items-center gap-2">
           <Checkbox 
-            checked={task.completed}
+            checked={task.status === 'done'}
             onCheckedChange={() => onToggleCompletion(task.id)}
           />
           <div className="flex-1">
-            <span className={task.completed ? "line-through text-muted-foreground" : ""}>
+            <span className={task.status === 'done' ? "line-through text-muted-foreground" : ""}>
               {task.title}
             </span>
             {task.dueDate && (

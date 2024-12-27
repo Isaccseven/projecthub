@@ -40,19 +40,23 @@ export function useProjects() {
 
   const filteredProjects = projects.filter(project => 
     searchQuery ? 
-      project.name.toLowerCase().includes(searchQuery) || 
+      project.title.toLowerCase().includes(searchQuery) || 
       project.description.toLowerCase().includes(searchQuery)
     : true
   )
 
-  const addProject = async (name: string, description: string) => {
+  const addProject = async (title: string, description: string) => {
     try {
       const response = await fetch('/api/projects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, description }),
+        body: JSON.stringify({
+          title,
+          description,
+          tasks: [],
+        }),
       })
       
       if (!response.ok) {

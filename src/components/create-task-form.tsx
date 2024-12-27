@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 import "react-day-picker/dist/style.css"
 
 interface CreateTaskFormProps {
-  onCreateTask: (task: { title: string; completed: boolean; dueDate?: string }) => void
+  onCreateTask: (task: { title: string; status: 'todo' | 'in-progress' | 'done'; dueDate?: string }) => void
 }
 
 export function CreateTaskForm({ onCreateTask }: CreateTaskFormProps) {
@@ -24,7 +24,7 @@ export function CreateTaskForm({ onCreateTask }: CreateTaskFormProps) {
     
     onCreateTask({
       title: title.trim(),
-      completed: false,
+      status: 'todo',
       dueDate: date ? format(date, 'yyyy-MM-dd') : undefined
     })
     setTitle('')

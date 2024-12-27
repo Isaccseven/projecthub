@@ -23,7 +23,7 @@ export function ProjectList({ projects }: ProjectListProps) {
           <Card className="h-full transition-all hover:shadow-lg">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="group-hover:text-primary">{project.name}</CardTitle>
+                <CardTitle className="group-hover:text-primary">{project.title}</CardTitle>
                 <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
               </div>
             </CardHeader>
