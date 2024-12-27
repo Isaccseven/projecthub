@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { Search } from 'lucide-react'
 import { Input } from "@/components/ui/input"
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
@@ -40,6 +40,7 @@ export function SearchBar() {
   }, [debouncedSearch, pathname, router, searchParams])
 
   return (
+    <Suspense>
     <div className="relative w-full max-w-[300px]">
       <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
@@ -50,5 +51,6 @@ export function SearchBar() {
         onChange={(e) => setSearchQuery(e.target.value)}
       />
     </div>
+    </Suspense>
   )
 }
