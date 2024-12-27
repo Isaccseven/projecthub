@@ -39,10 +39,11 @@ export function useProjects() {
   }, [fetchProjects])
 
   const filteredProjects = projects.filter(project => 
-    searchQuery ? 
-      project.title.toLowerCase().includes(searchQuery) || 
-      project.description.toLowerCase().includes(searchQuery)
-    : true
+    !searchQuery || (
+      project.title?.toLowerCase().includes(searchQuery) || 
+      project.description?.toLowerCase().includes(searchQuery) || 
+      false
+    )
   )
 
   const addProject = async (title: string, description: string) => {
