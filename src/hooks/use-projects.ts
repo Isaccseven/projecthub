@@ -1,24 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Project } from '@/types'
 
 const STORAGE_KEY = 'projecthub_projects'
 
 export function useProjects() {
   const [projects, setProjects] = useState<Project[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const searchParams = useSearchParams()
+  const searchQuery = searchParams.get('q')?.toLowerCase() || ''
 
-  useEffect(() => {
-    fetchProjects()
-  }, [])
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
+      setLoading(true)
       // First try to get from localStorage
       const storedProjects = localStorage.getItem(STORAGE_KEY)
       if (storedProjects) {
         setProjects(JSON.parse(storedProjects))
-        setIsLoading(false)
+        setLoading(false)
         return
       }
 
@@ -30,12 +29,21 @@ export function useProjects() {
       const data = await response.json()
       setProjects(data)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-      setIsLoading(false)
-    } catch (err) {
-      setError('Failed to fetch projects')
-      setIsLoading(false)
+    } finally {
+      setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
+
+  const filteredProjects = projects.filter(project => 
+    searchQuery ? 
+      project.name.toLowerCase().includes(searchQuery) || 
+      project.description.toLowerCase().includes(searchQuery)
+    : true
+  )
 
   const addProject = async (name: string, description: string) => {
     try {
@@ -57,10 +65,15 @@ export function useProjects() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProjects))
       return newProject
     } catch (err) {
-      setError('Failed to create project')
+      setLoading(false)
       throw err
     }
   }
 
-  return { projects, addProject, isLoading, error }
+  return {
+    projects: filteredProjects,
+    addProject,
+    loading,
+    refetch: fetchProjects
+  }
 }

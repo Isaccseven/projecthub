@@ -7,6 +7,7 @@ import { ProjectList } from "./components/project-list"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
+import { SearchBar } from '@/components/search-bar'
 import {
   Dialog,
   DialogContent,
@@ -18,10 +19,15 @@ import {
 import { useProjects } from "@/hooks/use-projects"
 
 export default function Dashboard() {
-  const { projects, addProject, isLoading, error } = useProjects()
+  const { projects, addProject, loading } = useProjects()
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  if (isLoading) return (
+  const handleCreateProject = async (name: string, description: string) => {
+    await addProject(name, description)
+    setDialogOpen(false)
+  }
+
+  if (loading) return (
     <>
       <Header />
       <main className="flex-1">
@@ -32,22 +38,6 @@ export default function Dashboard() {
     </>
   )
 
-  if (error) return (
-    <>
-      <Header />
-      <main className="flex-1">
-        <div className="container mx-auto p-6">
-          <div className="text-red-500">Error: {error}</div>
-        </div>
-      </main>
-    </>
-  )
-
-  const handleCreateProject = async (name: string, description: string) => {
-    await addProject(name, description)
-    setDialogOpen(false)
-  }
-
   return (
     <>
       <Header />
@@ -55,7 +45,12 @@ export default function Dashboard() {
         <ScrollArea className="h-full">
           <div className="container mx-auto p-6 space-y-8">
             <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">Projects</h1>
+              <div className="flex items-center gap-4 flex-1">
+                <h1 className="text-3xl font-bold">Projects</h1>
+                <div className="max-w-xs flex-1">
+                  <SearchBar />
+                </div>
+              </div>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
                   <Button className="flex items-center gap-2">

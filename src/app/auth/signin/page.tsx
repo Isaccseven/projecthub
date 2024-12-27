@@ -26,7 +26,7 @@ export default function SignIn() {
           variant: "destructive",
         })
       }
-    } catch (error) {
+    } catch (_) {
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",

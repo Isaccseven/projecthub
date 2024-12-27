@@ -1,13 +1,18 @@
 'use client'
 
 import { useState } from "react"
-import { Bell, Search, Loader2 } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ThemeToggle } from "./theme-toggle"
-import { UserNav } from "./user-nav"
+import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
+import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
+import { ThemeToggle } from "./theme-toggle"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export function Header() {
   const { data: session } = useSession()
@@ -18,12 +23,13 @@ export function Header() {
     try {
       setIsLoading(true)
       await signOut({ callbackUrl: '/auth/signin' })
-    } catch (error) {
+    } catch (_) {
       toast({
         title: "Error",
-        description: "Failed to sign out. Please try again.",
+        description: "Failed to sign out. Please try again.", 
         variant: "destructive",
       })
+    } finally {
       setIsLoading(false)
     }
   }
@@ -32,43 +38,31 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center space-x-4">
-          <h2 className="text-2xl font-bold">ProjectHub</h2>
-          <div className="hidden md:block">
-            <Input
-              type="search"
-              placeholder="Search projects..."
-              className="w-[300px]"
-              prefix={<Search className="h-4 w-4 text-muted-foreground" />}
-            />
-          </div>
+          <Link href="/" className="text-2xl font-bold">
+            ProjectHub
+          </Link>
         </div>
         <div className="flex items-center space-x-4">
           <ThemeToggle />
-          {session ? (
-            <>
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-                <span className="sr-only">Notifications</span>
-              </Button>
-              <UserNav />
-              <Button 
-                variant="destructive" 
-                onClick={handleSignOut}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                {isLoading ? "Signing out..." : "Sign Out"}
-              </Button>
-            </>
-          ) : (
-            <Button 
-              variant="default"
-              onClick={() => window.location.href = '/auth/signin'}
-            >
-              Sign In
-            </Button>
+          {session?.user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={session.user.image || ''} alt={session.user.name || ''} />
+                    <AvatarFallback>{session.user.name?.[0]}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={handleSignOut}
+                  disabled={isLoading}
+                >
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>

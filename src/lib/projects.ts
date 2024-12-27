@@ -1,34 +1,40 @@
-export async function getProject(id: string) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+import { Project } from '@/types'
+
+// In-memory storage for now, replace with database later
+const projects: Project[] = []
+
+export async function getProjects() {
+  return projects
+}
+
+export async function createProject(data: Project) {
+  const newProject: Project = {
+    id: Date.now().toString(),
+    name: data.name,
+    description: data.description,
+    tasks: [],
+  }
   
-  // First try to get from localStorage
-  if (typeof window !== 'undefined') {
-    const storedProjects = localStorage.getItem('projecthub_projects')
-    if (storedProjects) {
-      const projects = JSON.parse(storedProjects)
-      const project = projects.find((p: any) => p.id === id)
-      if (project) return project
-    }
-  }
+  projects.push(newProject)
+  return newProject
+}
 
-  // If not found in localStorage or server-side, fetch from API
-  try {
-    const res = await fetch(`${apiUrl}/api/projects/${id}`, { 
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+export async function getProjectById(id: string) {
+  return projects.find(p => p.id === id)
+}
 
-    if (!res.ok) {
-      if (res.status === 404) return null
-      throw new Error(`HTTP error! status: ${res.status}`)
-    }
+export async function updateProject(id: string, data: Partial<Project>) {
+  const index = projects.findIndex(p => p.id === id)
+  if (index === -1) return null
+  
+  projects[index] = { ...projects[index], ...data }
+  return projects[index]
+}
 
-    const project = await res.json()
-    return project
-  } catch (error) {
-    console.error('Failed to fetch project:', error)
-    throw error
-  }
+export async function deleteProject(id: string) {
+  const index = projects.findIndex(p => p.id === id)
+  if (index === -1) return false
+  
+  projects.splice(index, 1)
+  return true
 }
