@@ -13,6 +13,7 @@ export async function createProject(data: Project) {
     title: data.title,
     description: data.description,
     tasks: [],
+    createdAt: new Date().toISOString(),
   }
   
   projects.push(newProject)
