@@ -1,13 +1,9 @@
-import { NextResponse, NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getProjectById, updateProject, deleteProject } from '@/lib/projects'
-
-interface RouteParams {
-  params: { id: string }
-}
 
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: { id: string } }
 ) {
   try {
     const project = await getProjectById(params.id)
@@ -22,7 +18,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: { id: string } }
 ) {
   try {
     const data = await request.json()
@@ -38,7 +34,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: { id: string } }
 ) {
   try {
     const success = await deleteProject(params.id)
