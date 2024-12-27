@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getProjectById, updateProject, deleteProject } from '@/lib/projects'
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const project = await getProjectById(params.id)
+    const resolvedParams = await params
+    const project = await getProjectById(resolvedParams.id)
     if (!project) {
       return NextResponse.json({ message: 'Project not found' }, { status: 404 })
     }
@@ -17,28 +18,30 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const data = await request.json()
-    const project = await updateProject(params.id, data)
-    if (!project) {
+    const resolvedParams = await params
+    const body = await request.json()
+    const updatedProject = await updateProject(resolvedParams.id, body)
+    if (!updatedProject) {
       return NextResponse.json({ message: 'Project not found' }, { status: 404 })
     }
-    return NextResponse.json(project)
+    return NextResponse.json(updatedProject)
   } catch {
     return NextResponse.json({ message: 'Failed to update project' }, { status: 500 })
   }
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const success = await deleteProject(params.id)
-    if (!success) {
+    const resolvedParams = await params
+    const deletedProject = await deleteProject(resolvedParams.id)
+    if (!deletedProject) {
       return NextResponse.json({ message: 'Project not found' }, { status: 404 })
     }
     return NextResponse.json({ message: 'Project deleted successfully' })
