@@ -15,6 +15,7 @@ export function CreateProjectForm({ onCreateProject }: CreateProjectFormProps) {
   const [description, setDescription] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (title.trim() && description.trim()) {

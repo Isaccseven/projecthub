@@ -34,3 +34,52 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Setup Instructions
+
+1. Clone the repository:
+```bash
+git clone https://github.com/Isaccseven/projecthub.git
+cd projecthub
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Create a `.env.local` file and add the necessary environment variables:
+```bash
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_secret
+DATABASE_URL=your_database_url
+```
+
+4. Run the development server:
+```bash
+npm run dev
+```
+
+## Usage Examples
+
+### Creating a Project
+
+To create a new project, use the "Create Project" form on the homepage. Enter the project title and description, then click "Create Project".
+
+### Adding Tasks
+
+To add tasks to a project, navigate to the project details page and use the "Add Task" form. Enter the task title and due date, then click "Add Task".
+
+### Marking Tasks as Complete
+
+To mark a task as complete, click the checkbox next to the task title. The task will be moved to the "Completed" section.
+
+## Contribution Guidelines
+
+We welcome contributions from the community! To contribute, please follow these guidelines:
+
+1. Fork the repository and create a new branch for your feature or bugfix.
+2. Make your changes and ensure that the code passes all tests.
+3. Submit a pull request with a clear description of your changes.
+
+For more detailed guidelines, please refer to the `CONTRIBUTING.md` file.
