@@ -19,6 +19,7 @@ export function Header() {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
 
+  // Handle sign out
   const handleSignOut = async () => {
     try {
       setIsLoading(true)

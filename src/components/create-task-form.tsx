@@ -18,6 +18,7 @@ export function CreateTaskForm({ onCreateTask }: CreateTaskFormProps) {
   const [title, setTitle] = useState('')
   const [date, setDate] = useState<Date>()
 
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
